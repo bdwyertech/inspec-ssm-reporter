@@ -7,9 +7,9 @@ import (
     "os"
     "path/filepath"
     "time"
-	// AWS SDK
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
+    // AWS SDK
+    "github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/aws/session"
     "github.com/aws/aws-sdk-go/service/ssm"
 )
 
