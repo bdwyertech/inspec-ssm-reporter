@@ -13,7 +13,6 @@ import (
     "github.com/aws/aws-sdk-go/service/ssm"
 )
 
-type ExecutionSummary struct{}
 type InSpecReport map[string]interface{}
 
 // Determine Severity
