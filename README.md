@@ -1,6 +1,6 @@
 # inspec-ssm-reporter
 
-[![Build Status](https://travis-ci.org/bdwyertech/chef-wildfly.svg)](https://travis-ci.org/bdwyertech/chef-wildfly)
+[![Build Status](https://travis-ci.org/bdwyertech/inspec-ssm-reporter.svg)](https://travis-ci.org/bdwyertech/inspec-ssm-reporter)
 
 ###  Overview
 This is a utility to transform InSpec JSON into an AWS Compliance document
