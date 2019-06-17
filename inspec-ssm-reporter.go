@@ -1,16 +1,16 @@
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-    "log"
-    "os"
-    "path/filepath"
-    "time"
-    // AWS SDK
-    "github.com/aws/aws-sdk-go/aws"
-    "github.com/aws/aws-sdk-go/aws/session"
-    "github.com/aws/aws-sdk-go/service/ssm"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"time"
+	// AWS SDK
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
 type InSpecReport map[string]interface{}
@@ -31,22 +31,22 @@ func getSeverity(severity float64) string {
 
 func main() {
 	instance_id, ok := os.LookupEnv("AWS_SSM_INSTANCE_ID")
-	if ok !=true {
+	if ok != true {
 		log.Fatal("Unable to find environment variable AWS_SSM_INSTANCE_ID: make sure this script is executed by SSM Agent")
 	}
 
 	region, ok := os.LookupEnv("AWS_SSM_REGION_NAME")
-	if ok !=true {
+	if ok != true {
 		log.Fatal("Unable to find environment variable AWS_SSM_REGION_NAME: make sure this script is executed by SSM Agent")
 	}
 
 	// Read the JSON from STDIN
-    var report InSpecReport
+	var report InSpecReport
 
-    err := json.NewDecoder(os.Stdin).Decode(&report)
-    if err != nil {
-        log.Fatal(err)
-    }
+	err := json.NewDecoder(os.Stdin).Decode(&report)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Derive ExecutionID from the PWD
 	// PWD is something like: /var/lib/amazon/ssm/INSTANCE_ID/document/orchestration/EXECUTION_ID/downloads/
@@ -56,11 +56,11 @@ func main() {
 	}
 	execution_id := filepath.Base(filepath.Dir(pwd))
 
-    // Construct the Compliance Items
-    var items []*ssm.ComplianceItemEntry
+	// Construct the Compliance Items
+	var items []*ssm.ComplianceItemEntry
 
-	compliant := 0;
-	non_compliant := 0;
+	compliant := 0
+	non_compliant := 0
 	compliant_by_sev := make(map[string]int)
 	non_compliant_by_sev := make(map[string]int)
 
@@ -90,10 +90,10 @@ func main() {
 						}
 
 						items = append(items, &ssm.ComplianceItemEntry{
-							Id: aws.String(fmt.Sprintf("%s-%d", control["id"], len(items))),
+							Id:       aws.String(fmt.Sprintf("%s-%d", control["id"], len(items))),
 							Severity: aws.String(severity),
-							Status: aws.String(status),
-							Title: aws.String(fmt.Sprintf("%s : %s", control["title"], result["code_desc"])),
+							Status:   aws.String(status),
+							Title:    aws.String(fmt.Sprintf("%s : %s", control["title"], result["code_desc"])),
 						})
 					}
 				}
@@ -103,20 +103,20 @@ func main() {
 	// DEBUG
 	fmt.Println(items)
 
-    // Create a SSM client with additional configuration
+	// Create a SSM client with additional configuration
 	svc := ssm.New(session.New(), aws.NewConfig().WithRegion(region))
 
 	// Submit the Compliance Report
 	svc.PutComplianceItems(&ssm.PutComplianceItemsInput{
-		ResourceId: 	&instance_id,
-	  	ResourceType: 	aws.String("ManagedInstance"),
-  		ComplianceType: aws.String("Custom:InSpec"),
-  		ExecutionSummary: &ssm.ComplianceExecutionSummary{
-  			ExecutionId: aws.String(execution_id),
-  			ExecutionTime: aws.Time(time.Now()),
-  			ExecutionType: aws.String("Command"),
-  		},
-  		Items: items,
+		ResourceId:     &instance_id,
+		ResourceType:   aws.String("ManagedInstance"),
+		ComplianceType: aws.String("Custom:InSpec"),
+		ExecutionSummary: &ssm.ComplianceExecutionSummary{
+			ExecutionId:   aws.String(execution_id),
+			ExecutionTime: aws.Time(time.Now()),
+			ExecutionType: aws.String("Command"),
+		},
+		Items: items,
 	})
 
 	fmt.Printf("Completed InSpec checks and put %d compliant and %d non-compliant items", compliant, non_compliant)
