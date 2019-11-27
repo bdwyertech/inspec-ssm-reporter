@@ -1,6 +1,6 @@
 # inspec-ssm-reporter
 
-[![Build Status](https://travis-ci.org/bdwyertech/inspec-ssm-reporter.svg)](https://travis-ci.org/bdwyertech/inspec-ssm-reporter)
+[![Build Status](https://github.com/bdwyertech/inspec-ssm-reporter/workflows/Go/badge.svg?branch=master)](https://github.com/bdwyertech/inspec-ssm-reporter/actions?query=workflow%3AGo+branch%3Amaster)
 
 ###  Overview
 This is a utility to transform InSpec JSON into an AWS Compliance document
