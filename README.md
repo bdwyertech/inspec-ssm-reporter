@@ -45,4 +45,4 @@ if(!$?) {
 2. gvm install go1.12.6
 
 ### InSpec JSON Model
-* https://github.com/inspec/inspec/blob/master/test/unit/mock/reporters/json_output
+* https://github.com/inspec/inspec/blob/master/test/fixtures/reporters/json_output

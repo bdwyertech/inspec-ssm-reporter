@@ -13,8 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 )
 
-type InSpecReport map[string]interface{}
-
 // Determine Severity
 func getSeverity(severity float64) string {
 	switch {
@@ -64,39 +62,29 @@ func main() {
 	compliant_by_sev := make(map[string]int)
 	non_compliant_by_sev := make(map[string]int)
 
-	for k, v := range report {
-		if k == "profiles" {
-			profiles := v.([]interface{})
-			for _, profile := range profiles {
-				profile := profile.(map[string]interface{})
-				controls := profile["controls"].([]interface{})
-				for _, control := range controls {
-					control := control.(map[string]interface{})
-					results := control["results"].([]interface{})
-					for _, result := range results {
-						result := result.(map[string]interface{})
-						severity := getSeverity(control["impact"].(float64))
-						status := ""
-						if result["status"] == "passed" {
-							status = "COMPLIANT"
-							compliant++
-							compliant_by_sev[severity]++
-						} else if result["status"] == "failed" {
-							status = "NON_COMPLIANT"
-							non_compliant++
-							non_compliant_by_sev[severity]++
-						} else {
-							continue
-						}
-
-						items = append(items, &ssm.ComplianceItemEntry{
-							Id:       aws.String(fmt.Sprintf("%s-%d", control["id"], len(items))),
-							Severity: aws.String(severity),
-							Status:   aws.String(status),
-							Title:    aws.String(fmt.Sprintf("%s : %s", control["title"], result["code_desc"])),
-						})
-					}
+	for _, profile := range report.Profiles {
+		for _, control := range profile.Controls {
+			for _, result := range control.Results {
+				severity := getSeverity(control.Impact)
+				status := ""
+				if result.Status == "passed" {
+					status = "COMPLIANT"
+					compliant++
+					compliant_by_sev[severity]++
+				} else if result.Status == "failed" {
+					status = "NON_COMPLIANT"
+					non_compliant++
+					non_compliant_by_sev[severity]++
+				} else {
+					continue
 				}
+
+				items = append(items, &ssm.ComplianceItemEntry{
+					Id:       aws.String(fmt.Sprintf("%s-%d", control.ID, len(items))),
+					Severity: aws.String(severity),
+					Status:   aws.String(status),
+					Title:    aws.String(fmt.Sprintf("%s : %s", control.Title, result.CodeDesc)),
+				})
 			}
 		}
 	}
