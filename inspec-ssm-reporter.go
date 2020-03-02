@@ -67,12 +67,12 @@ func InSpecToCompliance(report InSpecReport) (items []*ssm.ComplianceItemEntry) 
 func main() {
 	instance_id, ok := os.LookupEnv("AWS_SSM_INSTANCE_ID")
 	if ok != true {
-		log.Fatal("Unable to find environment variable AWS_SSM_INSTANCE_ID: make sure this script is executed by SSM Agent")
+		log.Fatal("Unable to find environment variable AWS_SSM_INSTANCE_ID: make sure this is executed by SSM Agent")
 	}
 
 	region, ok := os.LookupEnv("AWS_SSM_REGION_NAME")
 	if ok != true {
-		log.Fatal("Unable to find environment variable AWS_SSM_REGION_NAME: make sure this script is executed by SSM Agent")
+		log.Fatal("Unable to find environment variable AWS_SSM_REGION_NAME: make sure this is executed by SSM Agent")
 	}
 
 	// Read the JSON from STDIN
