@@ -22,21 +22,6 @@ func TestInspecStructParse(t *testing.T) {
 		t.Fatal("Could not unmarshal InSpec report")
 	}
 
-	for _, profile := range report.Profiles {
-		for _, control := range profile.Controls {
-			for _, result := range control.Results {
-				severity := getSeverity(control.Impact)
-				status := ""
-				if result.Status == "passed" {
-					status = "COMPLIANT"
-				} else if result.Status == "failed" {
-					status = "NON_COMPLIANT"
-				} else {
-					continue
-				}
-				t.Logf("%v - %v - %v", status, severity, result)
-			}
-		}
-	}
-	// t.Fatal("")
+	items := InSpecToCompliance(report)
+	t.Log(items)
 }
