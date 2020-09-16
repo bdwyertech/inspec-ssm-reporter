@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
+
 	// AWS SDK
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -65,13 +67,20 @@ func InSpecToCompliance(report InSpecReport) (items []*ssm.ComplianceItemEntry) 
 }
 
 func main() {
+	flag.Parse()
+
+	if versionFlag {
+		showVersion()
+		os.Exit(0)
+	}
+
 	instance_id, ok := os.LookupEnv("AWS_SSM_INSTANCE_ID")
-	if ok != true {
+	if !ok {
 		log.Fatal("Unable to find environment variable AWS_SSM_INSTANCE_ID: make sure this is executed by SSM Agent")
 	}
 
 	region, ok := os.LookupEnv("AWS_SSM_REGION_NAME")
-	if ok != true {
+	if !ok {
 		log.Fatal("Unable to find environment variable AWS_SSM_REGION_NAME: make sure this is executed by SSM Agent")
 	}
 
@@ -94,8 +103,13 @@ func main() {
 	// Construct the Compliance Items
 	items := InSpecToCompliance(report)
 
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Config:            *aws.NewConfig().WithRegion(region).WithCredentialsChainVerboseErrors(true),
+		SharedConfigState: session.SharedConfigDisable,
+	}))
+
 	// Create a SSM client with additional configuration
-	svc := ssm.New(session.New(), aws.NewConfig().WithRegion(region))
+	svc := ssm.New(sess)
 
 	// Submit the Compliance Report
 	svc.PutComplianceItems(&ssm.PutComplianceItemsInput{
