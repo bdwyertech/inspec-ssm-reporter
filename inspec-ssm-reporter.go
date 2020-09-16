@@ -29,43 +29,6 @@ func getSeverity(severity float64) string {
 	}
 }
 
-func InSpecToCompliance(report InSpecReport) (items []*ssm.ComplianceItemEntry) {
-	compliant := 0
-	non_compliant := 0
-	compliant_by_sev := make(map[string]int)
-	non_compliant_by_sev := make(map[string]int)
-	for _, profile := range report.Profiles {
-		for _, control := range profile.Controls {
-			for _, result := range control.Results {
-				severity := getSeverity(control.Impact)
-				status := ""
-				if result.Status == "passed" {
-					status = "COMPLIANT"
-					compliant++
-					compliant_by_sev[severity]++
-				} else if result.Status == "failed" {
-					status = "NON_COMPLIANT"
-					non_compliant++
-					non_compliant_by_sev[severity]++
-				} else {
-					continue
-				}
-
-				items = append(items, &ssm.ComplianceItemEntry{
-					Id:       aws.String(fmt.Sprintf("%s-%d", control.ID, len(items))),
-					Severity: aws.String(severity),
-					Status:   aws.String(status),
-					Title:    aws.String(fmt.Sprintf("%s : %s", control.Title, result.CodeDesc)),
-				})
-			}
-		}
-	}
-	// DEBUG
-	// fmt.Printf("%d compliant and %d non-compliant items", compliant, non_compliant)
-	// fmt.Println(items)
-	return
-}
-
 func main() {
 	flag.Parse()
 
@@ -101,7 +64,7 @@ func main() {
 	execution_id := filepath.Base(filepath.Dir(pwd))
 
 	// Construct the Compliance Items
-	items := InSpecToCompliance(report)
+	items := report.ToComplianceItems()
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Config:            *aws.NewConfig().WithRegion(region).WithCredentialsChainVerboseErrors(true),

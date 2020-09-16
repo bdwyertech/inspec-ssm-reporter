@@ -22,6 +22,6 @@ func TestInspecStructParse(t *testing.T) {
 		t.Fatal("Could not unmarshal InSpec report")
 	}
 
-	items := InSpecToCompliance(report)
+	items := report.ToComplianceItems()
 	t.Log(items)
 }
