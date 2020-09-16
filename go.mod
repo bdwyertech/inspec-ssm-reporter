@@ -1,5 +1,5 @@
 module github.com/bdwyertech/inspec-ssm-reporter
 
-go 1.14
+go 1.15
 
-require github.com/aws/aws-sdk-go v1.29.14
+require github.com/aws/aws-sdk-go v1.34.24
