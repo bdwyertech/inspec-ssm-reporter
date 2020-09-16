@@ -6,18 +6,28 @@ before:
     # - go mod tidy
     # - go generate ./...
 builds:
-  - env:
+  - main: .
+    env:
       - CGO_ENABLED=0
     goos:
-      - windows
-      - linux
       - darwin
+      - linux
+      - windows
     goarch:
       - amd64
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: arm64
+      - goos: windows
+        goarch: arm64
     flags:
       - -mod=vendor
     ldflags:
-      - -s -w -X main.GitCommit={{.ShortCommit}} -X main.ReleaseVer={{.Version}}
+      - -s -w
+      - -X main.GitCommit={{.ShortCommit}}
+      - -X main.ReleaseVer={{.Version}}
+      - -X main.ReleaseDate={{.Date}}
 
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
