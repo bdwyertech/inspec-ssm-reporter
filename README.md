@@ -42,7 +42,9 @@ if(!$?) {
 
 ### Development
 1. Use gvm under WSL
-2. gvm install go1.12.6
+2. gvm install go1.15.1
+3. Run `gofmt` before committing
+	* `gofmt -w .`
 
 ### InSpec JSON Model
 * https://github.com/inspec/inspec/blob/master/test/fixtures/reporters/json_output
