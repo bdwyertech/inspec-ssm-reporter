@@ -47,4 +47,4 @@ if(!$?) {
 	* `gofmt -w .`
 
 ### InSpec JSON Model
-* https://github.com/inspec/inspec/blob/master/test/fixtures/reporters/json_output
+* https://github.com/inspec/inspec/blob/main/test/fixtures/reporters/json_output
